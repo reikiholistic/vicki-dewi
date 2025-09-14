@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan Pernikahan Vicki & Dewi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@200;300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #FFFBF5;
+            color: #5D4037;
+            /* Hide scrollbar until main content is shown */
+            overflow: hidden;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .font-great-vibes { font-family: 'Great Vibes', cursive; }
+        .text-gold { color: #B08968; }
+
+        /* Backgrounds */
+        .floral-bg {
+            background-image: url('https://www.dropbox.com/scl/fi/93f84r9a45b9eym6eoljl/.jpeg?rlkey=ngqudsiiax9bt77sxct7gob6f&st=3tg3j36m&raw=1');
+            background-color: #fefcf9;
+            background-position: center;
+            background-size: cover;
+        }
+
+        /* Cover Screen */
+        #cover-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100;
+            background-image: url('https://www.dropbox.com/scl/fi/cbd74av8qn8b3b10j8dxy/855a89b1-0213-41f6-bd84-991ce41abfca.jpeg?rlkey=q8l8zxid0nx2cac0fc87lisi2&st=f22013u7&raw=1'), url('https://www.transparenttextures.com/patterns/watercolor.png');
+            background-blend-mode: overlay;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+        }
+
+        /* Main Content Wrapper */
+        .content-wrapper {
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            z-index: 20;
+        }
+
+        /* Falling Petals Effect */
+        #falling-petals {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Sections & Cards */
+        .section {
+            padding: 2.5rem 1.5rem;
+            border-bottom: 1px solid #EFEBE9;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .section.visible { opacity: 1; transform: translateY(0); }
+        .card {
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #EFEBE9;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(8px);
+        }
+
+        /* Buttons & Countdown */
+        .btn-primary {
+            background-color: #B08968;
+            color: white;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #9C6F4C;
+            transform: scale(1.05);
+        }
+        .countdown-box {
+            background-color: #EFEBE9; color: #5D4037;
+            width: 70px; height: 70px; border-radius: 10px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .countdown-number { font-size: 1.75rem; font-weight: 600; }
+        .countdown-label { font-size: 0.75rem; text-transform: uppercase; }
+        
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        #cover-screen .animated-title { animation: fadeInDown 1.5s ease-out 0.5s backwards; }
+        #open-invitation { animation: pulse 2.0s infinite ease-in-out; }
+        .couple-photo {
+            animation: float 6s infinite ease-in-out;
+            transition: transform 0.3s ease;
+        }
+        .couple-photo:hover { transform: scale(1.05); }
+        .gallery-item {
+            opacity: 0; transform: scale(0.9);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .visible .gallery-item { opacity: 1; transform: scale(1); }
+        .visible .gallery-item:nth-child(1) { transition-delay: 0.1s; }
+        .visible .gallery-item:nth-child(2) { transition-delay: 0.2s; }
+        .visible .gallery-item:nth-child(3) { transition-delay: 0.3s; }
+        .visible .gallery-item:nth-child(4) { transition-delay: 0.4s; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Efek Latar Belakang -->
+    <canvas id="falling-petals"></canvas>
+
+    <!-- Halaman Sampul Depan -->
+    <div id="cover-screen">
+        <div class="p-8 text-center text-white relative z-10 bg-black bg-opacity-30 rounded-lg shadow-2xl">
+            <p class="tracking-widest" style="animation: fadeIn 1.5s ease-out;">THE WEDDING OF</p>
+            <h1 class="font-great-vibes text-7xl md:text-9xl my-4 text-white animated-title" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Vicki & Dewi</h1>
+            <div class="my-8" style="animation: fadeIn 1.5s ease-out 1s backwards;">
+                <p class="text-lg">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+                <p id="guest-name" class="text-xl font-semibold mt-2"></p>
+            </div>
+            <button id="open-invitation" class="btn-primary font-bold py-3 px-8 rounded-full shadow-lg">
+                <i class="fas fa-envelope-open mr-2"></i>Buka Undangan
+            </button>
+        </div>
+    </div>
+    
+    <!-- Konten Undangan Utama -->
+    <main id="main-content" class="hidden">
+        <div class="content-wrapper my-8 mx-4">
+            <!-- Header -->
+            <header class="section text-center floral-bg">
+                <p class="tracking-widest">WE ARE GETTING MARRIED</p>
+                <h1 class="font-great-vibes text-6xl my-4 text-gold">Vicki & Dewi</h1>
+                <p class="font-semibold text-lg">19 SEPTEMBER 2025</p>
+            </header>
+
+            <!-- Ayat Suci -->
+            <section class="section text-center">
+                <p class="italic text-sm">"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang..."</p>
+                <p class="mt-2 font-semibold">(QS. Ar-Rum: 21)</p>
+            </section>
+            
+            <!-- Pasangan -->
+            <section class="section text-center">
+                <h2 class="font-great-vibes text-5xl mb-8 text-gold">The Beloved Couple</h2>
+                 <div class="flex flex-col items-center gap-8">
+                    <!-- Pria -->
+                    <div class="w-full">
+                        <img src="https://www.dropbox.com/scl/fi/q8bxtx9xqg8wjemw77qhb/1757852766762-2.jpg?rlkey=rnt5hdbwuitfkdhl1xxfee525&st=fccwhv8n&raw=1" class="couple-photo w-40 h-40 rounded-full mx-auto shadow-lg object-cover">
+                        <h3 class="font-great-vibes text-4xl mt-4 text-gold">Vicki Jois Saputra</h3>
+                        <p class="mt-2">Putra dari Bapak Mari'in & Ibu Tutik</p>
+                        <p class="text-xs text-gray-500">Bojonegoro</p>
+                    </div>
+                    <div class="text-4xl font-great-vibes text-gold">&</div>
+                    <!-- Wanita -->
+                    <div class="w-full">
+                        <img src="https://www.dropbox.com/scl/fi/a0m00lkyhtbt19tm8bx7c/Gemini_Generated_Image_dxi85ddxi85ddxi8-2.png?rlkey=5mty4w7vxg5dqy8h34s5tf3tn&st=n7ellcup&raw=1" class="couple-photo w-40 h-40 rounded-full mx-auto shadow-lg object-cover" style="animation-delay: 3s;">
+                        <h3 class="font-great-vibes text-4xl mt-4 text-gold">Darwi Pujakusuma Dewi</h3>
+                        <p class="mt-2">Putri dari Bapak Heru & Ibu Widiyah Ningsih</p>
+                        <p class="text-xs text-gray-500">Palembang</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detail Acara & Countdown -->
+            <section class="section text-center floral-bg">
+                <h2 class="font-great-vibes text-5xl mb-8 text-gold">Save The Date</h2>
+                <div class="flex justify-center">
+                    <div class="card w-full md:w-3/4 text-center">
+                        <h3 class="text-2xl font-semibold">Resepsi Pernikahan</h3>
+                        <p class="text-lg mt-2"><i class="far fa-calendar-check mr-2"></i>Jum'at, 19 September 2025</p>
+                        <p><i class="far fa-clock mr-2"></i>13:00 WIB - Selesai</p>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <p class="text-lg">di Kediaman Mempelai Pria:</p>
+                    <p class="font-semibold mt-1">Ds. Trenggulunan, RT. 8/RW.2, Kec. Ngasem, Bojonegoro</p>
+                </div>
+                 <div id="countdown" class="flex justify-center gap-3 md:gap-4 mt-8">
+                    <div class="countdown-box"><span id="days" class="countdown-number">0</span><span class="countdown-label">Hari</span></div>
+                    <div class="countdown-box"><span id="hours" class="countdown-number">0</span><span class="countdown-label">Jam</span></div>
+                    <div class="countdown-box"><span id="minutes" class="countdown-number">0</span><span class="countdown-label">Menit</span></div>
+                    <div class="countdown-box"><span id="seconds" class="countdown-number">0</span><span class="countdown-label">Detik</span></div>
+                </div>
+            </section>
+            
+             <!-- Galeri Foto -->
+            <section class="section text-center">
+                <h2 class="font-great-vibes text-5xl mb-8 text-gold">Our Moments</h2>
+                <div class="grid grid-cols-2 gap-3 md:gap-4 p-2">
+                    <div class="gallery-item"><img src="https://www.dropbox.com/scl/fi/47gknjady814e2h8iuslh/_MG_4390.jpg?rlkey=7ghm3x9k2re840ebqxmocwn8r&st=czcho2zu&raw=1" alt="Foto Vicki dan Dewi 1" class="w-full h-full object-cover rounded-lg shadow-lg aspect-square"></div>
+                    <div class="gallery-item"><img src="https://www.dropbox.com/scl/fi/w485hvgnbt1vajrrathb1/_MG_4487-2.JPG?rlkey=crijsltciami52g7chehfz14c&st=dry14al2&raw=1" alt="Foto Vicki dan Dewi 2" class="w-full h-full object-cover rounded-lg shadow-lg aspect-square"></div>
+                    <div class="gallery-item"><img src="https://www.dropbox.com/scl/fi/a7klzhrdqkmqe55su9ovc/_MG_4391-2.JPG?rlkey=a3alww3bd91og1bgs6qmqihtl&st=f5zybc55&raw=1" alt="Foto Vicki dan Dewi 3" class="w-full h-full object-cover rounded-lg shadow-lg aspect-square"></div>
+                    <div class="gallery-item"><img src="https://www.dropbox.com/scl/fi/yftum5hguv6ez6212cgcn/_MG_4485-2.JPG?rlkey=7iva3cadhnmvkwaxdo18l445c&st=geq3enwh&raw=1" alt="Foto Vicki dan Dewi 4" class="w-full h-full object-cover rounded-lg shadow-lg aspect-square"></div>
+                </div>
+            </section>
+
+            <!-- Lokasi -->
+            <section class="section text-center">
+                <h2 class="font-great-vibes text-5xl mb-6 text-gold">Location</h2>
+                <div class="rounded-lg overflow-hidden border-2 border-amber-100 shadow-lg">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3958.001642844111!2d111.74923131526463!3d-7.240366994775267!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e778b403482590b%3A0x77c448f22757530c!2sTrenggulunan%2C%2C%20Ngasem%2C%20Bojonegoro%20Regency%2C%20East%20Java!5e0!3m2!1sen!2sid!4v1663156947761!5m2!1sen!2sid" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <a href="https://maps.app.goo.gl/yZYnZE36GwC14Vki6" target="_blank" class="inline-block btn-primary font-bold py-3 px-6 rounded-full mt-6"><i class="fas fa-map-marker-alt mr-2"></i>Buka Google Maps</a>
+            </section>
+            
+            <!-- Hadiah -->
+            <section class="section text-center floral-bg">
+                <h2 class="font-great-vibes text-5xl mb-4 text-gold">Wedding Gift</h2>
+                <p class="mb-8 max-w-md mx-auto">Doa restu Anda adalah anugerah terindah. Namun jika ingin memberi tanda kasih, kami siapkan sarana di bawah ini untuk kemudahan Anda.</p>
+                <div class="space-y-6">
+                    <div class="card"><img src="https://www.dropbox.com/scl/fi/u16erxiuvcwqqqqdtrah7/images-2-2.jpeg?rlkey=ybo7hj6qyw2o2bx9nq4df3x5t&st=hn6m0sv2&raw=1" alt="Logo BCA" class="h-6 mx-auto mb-3"><p id="bca-rek" class="text-lg font-semibold tracking-wider">6733058485</p><p class="text-sm">a/n Vicki Jois Saputra</p><button onclick="copyToClipboard('bca-rek', this)" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-1 px-3 rounded-full mt-3">Salin</button></div>
+                    <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/1200px-Bank_Mandiri_logo_2016.svg.png" alt="Logo Bank Mandiri" class="h-6 mx-auto mb-3"><p id="mandiri-rek" class="text-lg font-semibold tracking-wider">1410024447583</p><p class="text-sm">a/n Darwi Pujakusuma Dewi</p><button onclick="copyToClipboard('mandiri-rek', this)" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-1 px-3 rounded-full mt-3">Salin</button></div>
+                </div>
+            </section>
+            
+            <!-- Ucapan -->
+            <section class="section">
+                <h2 class="font-great-vibes text-5xl text-center mb-6 text-gold">Guest Wishes</h2>
+                <div class="card">
+                    <form>
+                        <div class="mb-4"><input type="text" name="name" class="w-full bg-white border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-200" placeholder="Nama Anda"></div>
+                        <div class="mb-4"><textarea name="wish" rows="4" class="w-full bg-white border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-200" placeholder="Tulis ucapan dan doa terbaik..."></textarea></div>
+                        <button type="submit" class="w-full btn-primary font-bold py-3 rounded-lg">Kirim Ucapan</button>
+                    </form>
+                </div>
+
+                <!-- Daftar Ucapan -->
+                <div class="mt-8 space-y-4 max-h-80 overflow-y-auto pr-2">
+                    <div class="bg-white/60 p-4 rounded-lg shadow-sm border-l-4 border-amber-200">
+                        <p class="text-sm">"Selamat menempuh hidup baru Vicki & Dewi! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah. Bahagia selalu!"</p>
+                        <p class="text-right text-xs font-semibold mt-2">- Budi & Keluarga</p>
+                    </div>
+                    <div class="bg-white/60 p-4 rounded-lg shadow-sm border-l-4 border-amber-200">
+                        <p class="text-sm">"Happy Wedding! Lancar sampai hari H dan semoga langgeng sampai kakek nenek. Turut berbahagia!"</p>
+                        <p class="text-right text-xs font-semibold mt-2">- Sarah Aulia</p>
+                    </div>
+                     <div class="bg-white/60 p-4 rounded-lg shadow-sm border-l-4 border-amber-200">
+                        <p class="text-sm">"Congrats for your wedding! So happy for you both. Wishing you a lifetime of love and happiness."</p>
+                        <p class="text-right text-xs font-semibold mt-2">- John Doe</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="text-center p-8">
+                <p class="max-w-md mx-auto">Merupakan suatu kehormatan bagi kami atas kehadiran dan doa restu Bapak/Ibu/Saudara/i.</p>
+                <p class="mt-4">Terima Kasih,</p>
+                <p class="font-great-vibes text-5xl mt-4 text-gold">Vicki & Dewi</p>
+            </footer>
+        </div>
+    </main>
+
+    <audio id="background-music" loop><source src="https://www.dropbox.com/scl/fi/7hvvgdg2cbwem8m82m4pj/ssstik.io_1757858280312.mp3.m4a?rlkey=7i1ffh0u91trsbzzsra5ifr9v&st=eccbxsaz&raw=1" type="audio/mp4">Browser Anda tidak mendukung elemen audio.</audio>
+
+    <script>
+        const openButton = document.getElementById('open-invitation');
+        const coverScreen = document.getElementById('cover-screen');
+        const mainContent = document.getElementById('main-content');
+        const bgMusic = document.getElementById('background-music');
+        const guestNameEl = document.getElementById('guest-name');
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const guestName = urlParams.get('to');
+        if (guestName) {
+            guestNameEl.textContent = guestName.replace(/_/g, ' ');
+        } else {
+            guestNameEl.textContent = "Tamu Undangan";
+        }
+
+        let autoScrollInterval; // Variabel untuk menyimpan interval auto-scroll
+
+        openButton.addEventListener('click', () => {
+            coverScreen.style.opacity = '0';
+            coverScreen.style.transform = 'scale(1.2)';
+            
+            // Mencoba memutar musik
+            bgMusic.play().catch(error => {
+                console.error("Audio play failed:", error);
+                // Beberapa browser memblokir autoplay, musik akan mulai saat user berinteraksi lagi.
+            });
+
+            setTimeout(() => {
+                coverScreen.style.display = 'none';
+                mainContent.style.display = 'block';
+                document.body.style.overflow = 'auto'; // Tampilkan kembali scrollbar
+                initFallingPetals();
+                observeSections();
+                startAutoScroll(); // Mulai auto-scroll
+            }, 1500);
+        });
+
+        // --- Fungsi Auto-Scroll ---
+        function startAutoScroll() {
+            // Hentikan auto-scroll jika user berinteraksi
+            const stopAutoScroll = () => {
+                clearInterval(autoScrollInterval);
+                window.removeEventListener('wheel', stopAutoScroll);
+                window.removeEventListener('touchmove', stopAutoScroll);
+            };
+            window.addEventListener('wheel', stopAutoScroll);
+            window.addEventListener('touchmove', stopAutoScroll);
+
+            const scrollAmount = 1; // Jumlah piksel untuk scroll setiap interval
+            const scrollDelay = 15; // Kecepatan scroll (ms)
+
+            autoScrollInterval = setInterval(() => {
+                // Cek jika sudah di paling bawah
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
+                    stopAutoScroll();
+                } else {
+                    window.scrollBy(0, scrollAmount);
+                }
+            }, scrollDelay);
+        }
+
+        const countdownDate = new Date("Sep 19, 2025 13:00:00").getTime();
+        const countdownInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("countdown").innerHTML = "<div class='text-center w-full text-lg'>Acara Telah Berlangsung</div>";
+                return;
+            }
+
+            document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+            document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
+        }, 1000);
+        
+        function copyToClipboard(elementId, button) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = 'Tersalin!';
+                button.disabled = true;
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 2000);
+            });
+        }
+        
+        function observeSections() {
+            const sections = document.querySelectorAll('.section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        }
+
+        // --- Efek Kelopak Bunga Jatuh ---
+        function initFallingPetals() {
+            const canvas = document.getElementById('falling-petals');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            
+            const resizeCanvas = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            };
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            const particleCount = 40; // Reduced for subtlety
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    radius: Math.random() * 4 + 2,
+                    speed: Math.random() * 1.5 + 0.5,
+                    opacity: Math.random() * 0.5 + 0.2,
+                    sway: Math.random() * 2 - 1
+                });
+            }
+
+            const draw = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Petal color matches theme
+                ctx.fillStyle = 'rgba(223, 203, 189, 0.7)'; 
+
+                particles.forEach(p => {
+                    ctx.beginPath();
+                    ctx.globalAlpha = p.opacity;
+                    // Elongated shape for a petal feel
+                    ctx.ellipse(p.x, p.y, p.radius, p.radius * 1.5, Math.sin(p.y / 20) * 0.5, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+                update();
+            }
+
+            const update = () => {
+                particles.forEach(p => {
+                    p.y += p.speed;
+                    p.x += Math.sin(p.y / 50) * p.sway;
+                    if (p.y > canvas.height + 20) {
+                        p.y = -20;
+                        p.x = Math.random() * canvas.width;
+                    }
+                });
+            }
+
+            const animate = () => {
+                draw();
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>
+
