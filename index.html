@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#7c3aed">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>AI Evaluator Simbol Reiki</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #fdfbf7;
+            background-color: #f3f4f6; /* Latar abu-abu untuk area di luar "layar HP" */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            touch-action: none; /* Mencegah scrolling saat menggambar di canvas */
+            touch-action: none; 
+            overscroll-behavior-y: none; /* Mencegah efek pull-to-refresh di browser HP */
         }
         #drawingCanvas {
-            border: 2px dashed #cbd5e1;
             background-color: #ffffff;
             cursor: crosshair;
-            width: 100%;
-            height: 300px;
-            border-radius: 0.75rem;
+            touch-action: none;
         }
         .loader {
             border: 4px solid #f3f3f3;
@@ -32,116 +32,144 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* Memastikan container mengambil full height presisi di HP */
+        body, html {
+            height: 100%;
+            margin: 0;
+            background-color: #f3f4f6;
+        }
+        .mobile-container {
+            height: 100vh; /* Fallback browser lama */
+            height: 100dvh; /* Presisi di HP (mengabaikan navbar browser) */
+            width: 100%;
+        }
+        @media (min-width: 640px) {
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .mobile-container {
+                height: 850px;
+                max-height: 90vh;
+            }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center py-8 px-4">
+<body class="font-sans">
 
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-purple-100">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white text-center">
-            <h1 class="text-2xl font-bold mb-2"><i class="fas fa-yin-yang mr-2"></i>Reiki Symbol AI</h1>
-            <p class="text-purple-100 text-sm">Latih dan koreksi guratan simbol Reiki Anda dengan bantuan AI.</p>
+    <!-- Mobile App Container (Layar HP) -->
+    <div class="bg-white w-full max-w-md mx-auto mobile-container flex flex-col relative overflow-hidden shadow-2xl sm:rounded-[2.5rem] sm:border-[8px] sm:border-gray-800">
+        
+        <!-- Header (Fixed di atas) -->
+        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-5 text-white text-center z-10 shadow-md flex-shrink-0">
+            <h1 class="text-xl font-bold mb-1"><i class="fas fa-yin-yang mr-2"></i>Reiki Symbol AI</h1>
+            <p class="text-purple-100 text-xs font-medium">Latih & Koreksi Simbol via HP</p>
         </div>
 
-        <div class="p-6">
+        <!-- Scrollable Content (Area Konten yang Bisa Digulir) -->
+        <div class="flex-1 overflow-y-auto p-5 pb-28">
             <!-- Pilih Simbol -->
             <div class="mb-5">
-                <label for="symbolSelect" class="block text-sm font-medium text-gray-700 mb-2">Sarudza Chiratidzo chekudzidzira:</label>
-                <select id="symbolSelect" onchange="updateReference()" class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-white">
+                <label for="symbolSelect" class="block text-sm font-bold text-gray-700 mb-2">Pilih Simbol Pelatihan:</label>
+                <select id="symbolSelect" onchange="updateReference()" class="block w-full px-4 py-3 border-2 border-purple-100 rounded-xl focus:ring-purple-500 focus:border-purple-500 bg-gray-50 font-semibold text-gray-800 shadow-sm appearance-none">
                     <option value="Cho Ku Rei">Cho Ku Rei (Power Symbol)</option>
                     <option value="Sei He Ki">Sei He Ki (Mental/Emotional Symbol)</option>
                     <option value="Hon Sha Ze Sho Nen">Hon Sha Ze Sho Nen (Distance Symbol)</option>
                 </select>
             </div>
 
-            <!-- Area Referensi Gambar (Mufananidzo weNongedzo) -->
+            <!-- Area Referensi Gambar -->
             <div class="mb-5">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Mufananidzo weNongedzo (Reference):</label>
-                <div class="w-full bg-purple-50 border-2 border-dashed border-purple-200 rounded-lg p-3 flex justify-center shadow-inner">
-                    <img id="referenceImage" crossorigin="anonymous" src="https://dl.dropboxusercontent.com/scl/fi/2ikdcmf9qmvsck4j9bcfj/IMG-20230126-WA0016.jpg?rlkey=bekf4ow7iig3r8rt01g8cp89i" alt="Reference Symbol" class="max-h-56 object-contain rounded">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Gambar Acuan:</label>
+                <div class="w-full bg-purple-50 border-2 border-dashed border-purple-300 rounded-xl p-2 flex justify-center shadow-inner">
+                    <img id="referenceImage" crossorigin="anonymous" src="https://dl.dropboxusercontent.com/scl/fi/2ikdcmf9qmvsck4j9bcfj/IMG-20230126-WA0016.jpg?rlkey=bekf4ow7iig3r8rt01g8cp89i" alt="Reference Symbol" class="max-h-32 object-contain rounded-lg">
                 </div>
             </div>
 
             <!-- Mode Input Pilihan -->
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Metode Input Gambar:</label>
-                <div class="grid grid-cols-3 gap-2 bg-gray-100 p-1 rounded-lg">
-                    <button id="tab-draw" onclick="setMode('draw')" class="py-2 text-sm font-medium rounded-md bg-white shadow text-purple-700 transition-all">✏️ Gambar</button>
-                    <button id="tab-upload" onclick="setMode('upload')" class="py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 transition-all">📁 Unggah</button>
-                    <button id="tab-camera" onclick="setMode('camera')" class="py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 transition-all">📷 Kamera</button>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Metode Input:</label>
+                <div class="grid grid-cols-3 gap-1 bg-gray-100 p-1.5 rounded-xl border border-gray-200 shadow-inner">
+                    <button id="tab-draw" onclick="setMode('draw')" class="py-2.5 text-xs font-bold rounded-lg bg-white shadow text-purple-700 transition-all">✏️ Gambar</button>
+                    <button id="tab-upload" onclick="setMode('upload')" class="py-2.5 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-700 transition-all">📁 Unggah</button>
+                    <button id="tab-camera" onclick="setMode('camera')" class="py-2.5 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-700 transition-all">📷 Kamera</button>
                 </div>
             </div>
 
             <!-- Area Menggambar / Input -->
-            <div class="mb-4">
-                <div class="flex justify-between items-end mb-2">
-                    <label id="inputLabel" class="block text-sm font-medium text-gray-700">Gambar Simbol di Bawah Ini:</label>
-                    <button onclick="clearCanvas()" class="text-sm text-red-500 hover:text-red-700 font-medium">
-                        <i class="fas fa-eraser"></i> Bersihkan
+            <div class="mb-2">
+                <div class="flex justify-between items-end mb-2 px-1">
+                    <label id="inputLabel" class="block text-sm font-bold text-gray-700">Gambar di Sini:</label>
+                    <button onclick="clearCanvas()" class="text-xs text-red-600 hover:text-red-800 font-bold bg-red-50 px-3 py-1.5 rounded-full border border-red-100 active:bg-red-100">
+                        <i class="fas fa-eraser mr-1"></i> Bersihkan
                     </button>
                 </div>
                 
-                <div class="relative w-full">
+                <!-- Aspect Square untuk Mobile (Kotak Presisi) -->
+                <div class="relative w-full aspect-square max-h-[400px]">
                     <!-- Input File Hidden -->
                     <input type="file" id="imageUpload" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
                     
                     <!-- Kamera Container -->
-                    <div id="cameraContainer" class="hidden flex-col items-center justify-center w-full h-[300px] bg-black rounded-xl overflow-hidden relative">
+                    <div id="cameraContainer" class="hidden flex-col items-center justify-center w-full h-full bg-black rounded-2xl overflow-hidden relative shadow-inner">
                         <video id="cameraFeed" autoplay playsinline class="w-full h-full object-cover"></video>
-                        <button onclick="captureCamera()" class="absolute bottom-4 bg-white text-purple-700 px-6 py-2 rounded-full font-bold shadow-lg flex items-center">
-                            <i class="fas fa-camera mr-2"></i> Ambil Foto
+                        <button onclick="captureCamera()" class="absolute bottom-6 bg-white text-purple-700 px-6 py-3 rounded-full font-bold shadow-2xl flex items-center border-2 border-purple-100 active:scale-95 transition-transform">
+                            <i class="fas fa-camera mr-2 text-lg"></i> Ambil Foto
                         </button>
                     </div>
 
                     <!-- Canvas -->
-                    <canvas id="drawingCanvas"></canvas>
+                    <canvas id="drawingCanvas" class="shadow-sm rounded-2xl w-full h-full border-2 border-purple-200 bg-white"></canvas>
                 </div>
             </div>
 
-            <!-- Tombol Submit -->
-            <button id="submitBtn" onclick="evaluateSymbol()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex justify-center items-center shadow-md">
-                <i class="fas fa-magic mr-2"></i> Evaluasi dengan AI
-            </button>
-        </div>
+            <!-- Area Loading -->
+            <div id="loadingArea" class="hidden py-8 flex-col items-center justify-center bg-purple-50 rounded-2xl mt-6 border border-purple-100 shadow-sm">
+                <div class="loader mb-3"></div>
+                <p class="text-purple-700 text-sm font-bold animate-pulse">AI sedang menganalisis...</p>
+            </div>
 
-        <!-- Area Loading -->
-        <div id="loadingArea" class="hidden py-6 flex-col items-center justify-center border-t border-gray-100 bg-purple-50">
-            <div class="loader mb-3"></div>
-            <p class="text-purple-700 text-sm font-medium animate-pulse">AI sedang menganalisis guratan Anda...</p>
-        </div>
+            <!-- Area Hasil -->
+            <div id="resultArea" class="hidden bg-gray-50 p-5 rounded-2xl border border-gray-200 mt-6 shadow-sm">
+                <h2 class="text-md font-bold text-gray-800 mb-3 border-b pb-2">Hasil Evaluasi AI</h2>
+                
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-bold text-gray-500">Tingkat Akurasi:</span>
+                        <span id="scoreBadge" class="px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-3 mb-1 overflow-hidden">
+                        <div id="scoreBar" class="bg-green-600 h-3 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
 
-        <!-- Area Hasil -->
-        <div id="resultArea" class="hidden bg-gray-50 p-6 border-t border-gray-200">
-            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Hasil Evaluasi AI</h2>
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                    <h3 class="text-sm font-bold text-blue-800 mb-2"><i class="fas fa-comment-medical mr-1"></i> Umpan Balik:</h3>
+                    <p id="feedbackText" class="text-sm text-gray-700 leading-relaxed font-medium">
+                        <!-- Feedback text will appear here -->
+                    </p>
+                    <!-- Area untuk titik kesalahan spesifik -->
+                    <div id="feedbackPoints" class="mt-3"></div>
+                </div>
+            </div>
             
-            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm mb-4">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-500">Tingkat Akurasi:</span>
-                    <span id="scoreBadge" class="px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700">0%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                    <div id="scoreBar" class="bg-green-600 h-2.5 rounded-full" style="width: 0%"></div>
-                </div>
-            </div>
-
-            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                <h3 class="text-sm font-bold text-blue-800 mb-2"><i class="fas fa-comment-medical mr-1"></i> Umpan Balik & Koreksi:</h3>
-                <p id="feedbackText" class="text-sm text-gray-700 leading-relaxed">
-                    <!-- Feedback text will appear here -->
-                </p>
-                <!-- Area untuk titik kesalahan spesifik -->
-                <div id="feedbackPoints" class="mt-3"></div>
+            <!-- Area Error -->
+            <div id="errorArea" class="hidden bg-red-50 p-4 rounded-xl border border-red-200 mt-6">
+                 <p id="errorText" class="text-sm text-red-600 text-center font-bold"></p>
             </div>
         </div>
-        
-        <!-- Area Error -->
-        <div id="errorArea" class="hidden bg-red-50 p-6 border-t border-red-200">
-             <p id="errorText" class="text-sm text-red-600 text-center"></p>
+
+        <!-- Fixed Bottom Action Bar (Tombol Menempel di Bawah) -->
+        <div class="absolute bottom-0 w-full bg-white border-t border-gray-200 p-4 pb-6 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] z-20 sm:rounded-b-[2.5rem]">
+            <button id="submitBtn" onclick="evaluateSymbol()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-4 px-4 rounded-xl transition duration-200 flex justify-center items-center shadow-lg active:scale-[0.98]">
+                <i class="fas fa-magic text-xl mr-2"></i> Evaluasi Simbol
+            </button>
         </div>
     </div>
 
     <script>
-        // --- ZVINONGEDZO ZVEMIFANANIDZO (REFERENCE IMAGES) ---
+        // --- REFERENSI GAMBAR ---
         const referenceLinks = {
             "Cho Ku Rei": "https://dl.dropboxusercontent.com/scl/fi/2ikdcmf9qmvsck4j9bcfj/IMG-20230126-WA0016.jpg?rlkey=bekf4ow7iig3r8rt01g8cp89i",
             "Sei He Ki": "https://dl.dropboxusercontent.com/scl/fi/zr4rsexa7b1zo23pp3pg2/IMG-20230126-WA0014.jpg?rlkey=8how9xshrd090p6a2lz8zjr47",
@@ -165,7 +193,7 @@
         function resizeCanvas() {
             const rect = canvas.parentElement.getBoundingClientRect();
             canvas.width = rect.width;
-            canvas.height = 300;
+            canvas.height = rect.height; // Menggunakan aspect ratio square dari container
             
             // Set background putih (penting untuk konversi gambar AI)
             ctx.fillStyle = "white";
@@ -259,7 +287,7 @@
             
             // Reset tab styles
             [tabDraw, tabUpload, tabCamera].forEach(tab => {
-                tab.className = 'py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 transition-all';
+                tab.className = 'py-2.5 text-xs font-bold rounded-lg text-gray-500 hover:text-gray-700 transition-all';
             });
 
             // Stop camera if running
@@ -272,15 +300,15 @@
             canvas.classList.remove('hidden');
 
             if (mode === 'draw') {
-                tabDraw.className = 'py-2 text-sm font-medium rounded-md bg-white shadow text-purple-700 transition-all';
-                inputLabel.textContent = 'Gambar Simbol di Bawah Ini:';
+                tabDraw.className = 'py-2.5 text-xs font-bold rounded-lg bg-white shadow text-purple-700 transition-all';
+                inputLabel.textContent = 'Gambar di Sini:';
                 clearCanvas();
             } else if (mode === 'upload') {
-                tabUpload.className = 'py-2 text-sm font-medium rounded-md bg-white shadow text-purple-700 transition-all';
-                inputLabel.textContent = 'Preview Gambar Unggahan (Bisa ditimpa/dicoret):';
+                tabUpload.className = 'py-2.5 text-xs font-bold rounded-lg bg-white shadow text-purple-700 transition-all';
+                inputLabel.textContent = 'Preview Gambar (Bisa dicoret):';
                 document.getElementById('imageUpload').click();
             } else if (mode === 'camera') {
-                tabCamera.className = 'py-2 text-sm font-medium rounded-md bg-white shadow text-purple-700 transition-all';
+                tabCamera.className = 'py-2.5 text-xs font-bold rounded-lg bg-white shadow text-purple-700 transition-all';
                 inputLabel.textContent = 'Arahkan Kamera ke Kertas:';
                 canvas.classList.add('hidden');
                 cameraContainer.classList.remove('hidden');
@@ -330,7 +358,7 @@
             document.getElementById('cameraContainer').classList.add('hidden');
             document.getElementById('cameraContainer').classList.remove('flex');
             canvas.classList.remove('hidden');
-            document.getElementById('inputLabel').textContent = 'Hasil Jepretan (Bisa ditimpa/dicoret):';
+            document.getElementById('inputLabel').textContent = 'Hasil Foto (Bisa dicoret):';
         }
 
         // Fungsi khusus untuk menggambar foto/kamera agar pas (proporsional) ke dalam canvas
@@ -409,7 +437,7 @@
                 const dataURL = canvas.toDataURL("image/png");
                 const base64Image = dataURL.split(',')[1];
 
-                // Tora base64 yemufananidzo wenongedzo (Extract Reference Image Base64)
+                // Ambil base64 gambar referensi
                 let refBase64 = null;
                 try {
                     const refImg = document.getElementById('referenceImage');
@@ -420,28 +448,27 @@
                     tempCtx.drawImage(refImg, 0, 0);
                     refBase64 = tempCanvas.toDataURL("image/jpeg").split(',')[1];
                 } catch(e) {
-                    console.log("Kutadza kutora mufananidzo weNongedzo (CORS issue)", e);
+                    console.log("Gagal mengambil gambar referensi (CORS issue)", e);
                 }
 
                 // Prompt Instruksi Khusus untuk AI
-                const promptText = `Iwe uri Nyanzvi yeReiki. Mushandisi adhirowa chiratidzo: "${symbolSelected}". 
-Tariisa mufananidzo wechipiri (reference image) seyiyo chaiyo yekutarisa (absolute reference).
-Ongorora mufananidzo wekutanga (udhirowewa) uchienzanisa newechipiri.
+                const promptText = `Anda adalah Master Reiki ahli. Pengguna baru saja menggambar simbol Reiki: "${symbolSelected}". 
+Tugas Anda adalah mengevaluasi gambar pertama (coretan pengguna) dengan membandingkannya secara ketat terhadap gambar kedua (gambar acuan/referensi).
 1. Berikan skor akurasi (0-100) berdasarkan proporsi, arah guratan, dan keutuhan simbol dibandingkan dengan gambar referensi.
 2. Berikan umpan balik yang konstruktif dalam bahasa Indonesia tentang apa yang sudah bagus dan apa yang perlu diperbaiki.
 3. Berikan array 'titik_kesalahan' (koordinat x dan y dalam persentase 0-100) beserta keterangan spesifik dalam bahasa Indonesia mengenai ketidaksesuaian dengan referensi. Jika gambar sempurna, kosongkan array ini.`;
 
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
                 
-                // Gadzirira data rekuendesa (Payload parts)
+                // Siapkan data untuk dikirim
                 const requestParts = [
                     { text: promptText },
                     { inlineData: { mimeType: "image/png", data: base64Image } }
                 ];
 
-                // Batanidza mufananidzo wenongedzo kana uripo
+                // Lampirkan gambar acuan jika ada
                 if (refBase64) {
-                    requestParts.push({ text: "Mufananidzo weNongedzo (Reference Image):" });
+                    requestParts.push({ text: "Gambar Acuan (Reference Image):" });
                     requestParts.push({ inlineData: { mimeType: "image/jpeg", data: refBase64 } });
                 }
 
@@ -489,7 +516,7 @@ Ongorora mufananidzo wekutanga (udhirowewa) uchienzanisa newechipiri.
 
             } catch (error) {
                 console.error("AI Error:", error);
-                showError("Tadaduka kubata AI. Kune dambudziko netiweki kana sevha yakabatikana. Ndapota edza zvakare.");
+                showError("Gagal menghubungi AI. Periksa koneksi internet Anda atau coba beberapa saat lagi.");
             } finally {
                 loadingArea.classList.add('hidden');
                 loadingArea.classList.remove('flex');
