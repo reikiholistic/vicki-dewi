@@ -2,456 +2,585 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Undangan Pernikahan Vicki & Dewi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Evaluator Simbol Reiki</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@200;300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* General Styling */
         body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #FFFBF5;
-            color: #5D4037;
-            /* Hide scrollbar until main content is shown */
-            overflow: hidden;
+            background-color: #fdfbf7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: none; /* Mencegah scrolling saat menggambar di canvas */
         }
-        html {
-            scroll-behavior: smooth;
-        }
-        .font-great-vibes { font-family: 'Great Vibes', cursive; }
-        .text-gold { color: #B08968; }
-
-        /* Backgrounds */
-        .floral-bg {
-            background-image: url('https://www.dropbox.com/scl/fi/93f84r9a45b9eym6eoljl/.jpeg?rlkey=ngqudsiiax9bt77sxct7gob6f&st=3tg3j36m&raw=1');
-            background-color: #fefcf9;
-            background-position: center;
-            background-size: cover;
-        }
-
-        /* Cover Screen */
-        #cover-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 100;
-            background-image: url('https://www.dropbox.com/scl/fi/cbd74av8qn8b3b10j8dxy/855a89b1-0213-41f6-bd84-991ce41abfca.jpeg?rlkey=q8l8zxid0nx2cac0fc87lisi2&st=f22013u7&raw=1'), url('https://www.transparenttextures.com/patterns/watercolor.png');
-            background-blend-mode: overlay;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            transition: opacity 1.5s ease-out, transform 1.5s ease-out;
-        }
-
-        /* Main Content Wrapper */
-        .content-wrapper {
-            max-width: 500px;
-            margin: auto;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-            z-index: 20;
-        }
-
-        /* Falling Petals Effect */
-        #falling-petals {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        /* Sections & Cards */
-        .section {
-            padding: 2.5rem 1.5rem;
-            border-bottom: 1px solid #EFEBE9;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .section.visible { opacity: 1; transform: translateY(0); }
-        .card {
-            background-color: rgba(255, 255, 255, 0.8);
-            border: 1px solid #EFEBE9;
+        #drawingCanvas {
+            border: 2px dashed #cbd5e1;
+            background-color: #ffffff;
+            cursor: crosshair;
+            width: 100%;
+            height: 300px;
             border-radius: 0.75rem;
-            padding: 1.5rem;
-            backdrop-filter: blur(8px);
         }
-
-        /* Buttons & Countdown */
-        .btn-primary {
-            background-color: #B08968;
-            color: white;
-            transition: background-color 0.3s, transform 0.3s;
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #8b5cf6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
         }
-        .btn-primary:hover {
-            background-color: #9C6F4C;
-            transform: scale(1.05);
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        .countdown-box {
-            background-color: #EFEBE9; color: #5D4037;
-            width: 70px; height: 70px; border-radius: 10px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .countdown-number { font-size: 1.75rem; font-weight: 600; }
-        .countdown-label { font-size: 0.75rem; text-transform: uppercase; }
-        
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        #cover-screen .animated-title { animation: fadeInDown 1.5s ease-out 0.5s backwards; }
-        #open-invitation { animation: pulse 2.0s infinite ease-in-out; }
-        .couple-photo {
-            animation: float 6s infinite ease-in-out;
-            transition: transform 0.3s ease;
-        }
-        .couple-photo:hover { transform: scale(1.05); }
-        .gallery-item {
-            opacity: 0; transform: scale(0.9);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-        }
-        .visible .gallery-item { opacity: 1; transform: scale(1); }
-        .visible .gallery-item:nth-child(1) { transition-delay: 0.1s; }
-        .visible .gallery-item:nth-child(2) { transition-delay: 0.2s; }
-        .visible .gallery-item:nth-child(3) { transition-delay: 0.3s; }
-        .visible .gallery-item:nth-child(4) { transition-delay: 0.4s; }
     </style>
 </head>
-<body class="antialiased">
+<body class="min-h-screen flex flex-col items-center py-8 px-4">
 
-    <!-- Efek Latar Belakang -->
-    <canvas id="falling-petals"></canvas>
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-purple-100">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white text-center">
+            <h1 class="text-2xl font-bold mb-2"><i class="fas fa-yin-yang mr-2"></i>Reiki Symbol AI</h1>
+            <p class="text-purple-100 text-sm">Latih dan koreksi guratan simbol Reiki Anda dengan bantuan AI.</p>
+        </div>
 
-    <!-- Halaman Sampul Depan -->
-    <div id="cover-screen">
-        <div class="p-8 text-center text-white relative z-10 bg-black bg-opacity-30 rounded-lg shadow-2xl">
-            <p class="tracking-widest" style="animation: fadeIn 1.5s ease-out;">THE WEDDING OF</p>
-            <h1 class="font-great-vibes text-7xl md:text-9xl my-4 text-white animated-title" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Vicki & Dewi</h1>
-            <div class="my-8" style="animation: fadeIn 1.5s ease-out 1s backwards;">
-                <p class="text-lg">Kepada Yth. Bapak/Ibu/Saudara/i</p>
-                <p id="guest-name" class="text-xl font-semibold mt-2"></p>
+        <div class="p-6">
+            <!-- Pilih Simbol -->
+            <div class="mb-5">
+                <label for="symbolSelect" class="block text-sm font-medium text-gray-700 mb-2">Sarudza Chiratidzo chekudzidzira:</label>
+                <select id="symbolSelect" onchange="updateReference()" class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-white">
+                    <option value="Cho Ku Rei">Cho Ku Rei (Power Symbol)</option>
+                    <option value="Sei He Ki">Sei He Ki (Mental/Emotional Symbol)</option>
+                    <option value="Hon Sha Ze Sho Nen">Hon Sha Ze Sho Nen (Distance Symbol)</option>
+                </select>
             </div>
-            <button id="open-invitation" class="btn-primary font-bold py-3 px-8 rounded-full shadow-lg">
-                <i class="fas fa-envelope-open mr-2"></i>Buka Undangan
+
+            <!-- Area Referensi Gambar (Mufananidzo weNongedzo) -->
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Mufananidzo weNongedzo (Reference):</label>
+                <div class="w-full bg-purple-50 border-2 border-dashed border-purple-200 rounded-lg p-3 flex justify-center shadow-inner">
+                    <img id="referenceImage" crossorigin="anonymous" src="https://dl.dropboxusercontent.com/scl/fi/2ikdcmf9qmvsck4j9bcfj/IMG-20230126-WA0016.jpg?rlkey=bekf4ow7iig3r8rt01g8cp89i" alt="Reference Symbol" class="max-h-56 object-contain rounded">
+                </div>
+            </div>
+
+            <!-- Mode Input Pilihan -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Metode Input Gambar:</label>
+                <div class="grid grid-cols-3 gap-2 bg-gray-100 p-1 rounded-lg">
+                    <button id="tab-draw" onclick="setMode('draw')" class="py-2 text-sm font-medium rounded-md bg-white shadow text-purple-700 transition-all">✏️ Gambar</button>
+                    <button id="tab-upload" onclick="setMode('upload')" class="py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 transition-all">📁 Unggah</button>
+                    <button id="tab-camera" onclick="setMode('camera')" class="py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 transition-all">📷 Kamera</button>
+                </div>
+            </div>
+
+            <!-- Area Menggambar / Input -->
+            <div class="mb-4">
+                <div class="flex justify-between items-end mb-2">
+                    <label id="inputLabel" class="block text-sm font-medium text-gray-700">Gambar Simbol di Bawah Ini:</label>
+                    <button onclick="clearCanvas()" class="text-sm text-red-500 hover:text-red-700 font-medium">
+                        <i class="fas fa-eraser"></i> Bersihkan
+                    </button>
+                </div>
+                
+                <div class="relative w-full">
+                    <!-- Input File Hidden -->
+                    <input type="file" id="imageUpload" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+                    
+                    <!-- Kamera Container -->
+                    <div id="cameraContainer" class="hidden flex-col items-center justify-center w-full h-[300px] bg-black rounded-xl overflow-hidden relative">
+                        <video id="cameraFeed" autoplay playsinline class="w-full h-full object-cover"></video>
+                        <button onclick="captureCamera()" class="absolute bottom-4 bg-white text-purple-700 px-6 py-2 rounded-full font-bold shadow-lg flex items-center">
+                            <i class="fas fa-camera mr-2"></i> Ambil Foto
+                        </button>
+                    </div>
+
+                    <!-- Canvas -->
+                    <canvas id="drawingCanvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Tombol Submit -->
+            <button id="submitBtn" onclick="evaluateSymbol()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex justify-center items-center shadow-md">
+                <i class="fas fa-magic mr-2"></i> Evaluasi dengan AI
             </button>
         </div>
-    </div>
-    
-    <!-- Konten Undangan Utama -->
-    <main id="main-content" class="hidden">
-        <div class="content-wrapper my-8 mx-4">
-            <!-- Header -->
-            <header class="section text-center floral-bg">
-                <p class="tracking-widest">WE ARE GETTING MARRIED</p>
-                <h1 class="font-great-vibes text-6xl my-4 text-gold">Vicki & Dewi</h1>
-                <p class="font-semibold text-lg">19 SEPTEMBER 2025</p>
-            </header>
 
-            <!-- Ayat Suci -->
-            <section class="section text-center">
-                <p class="italic text-sm">"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang..."</p>
-                <p class="mt-2 font-semibold">(QS. Ar-Rum: 21)</p>
-            </section>
-            
-            <!-- Pasangan -->
-            <section class="section text-center">
-                <h2 class="font-great-vibes text-5xl mb-8 text-gold">The Beloved Couple</h2>
-                 <div class="flex flex-col items-center gap-8">
-                    <!-- Pria -->
-                    <div class="w-full">
-                        <img src="https://www.dropbox.com/scl/fi/q8bxtx9xqg8wjemw77qhb/1757852766762-2.jpg?rlkey=rnt5hdbwuitfkdhl1xxfee525&st=fccwhv8n&raw=1" class="couple-photo w-40 h-40 rounded-full mx-auto shadow-lg object-cover">
-                        <h3 class="font-great-vibes text-4xl mt-4 text-gold">Vicki Jois Saputra</h3>
-                        <p class="mt-2">Putra dari Bapak Mari'in & Ibu Tutik</p>
-                        <p class="text-xs text-gray-500">Bojonegoro</p>
-                    </div>
-                    <div class="text-4xl font-great-vibes text-gold">&</div>
-                    <!-- Wanita -->
-                    <div class="w-full">
-                        <img src="https://www.dropbox.com/scl/fi/a0m00lkyhtbt19tm8bx7c/Gemini_Generated_Image_dxi85ddxi85ddxi8-2.png?rlkey=5mty4w7vxg5dqy8h34s5tf3tn&st=n7ellcup&raw=1" class="couple-photo w-40 h-40 rounded-full mx-auto shadow-lg object-cover" style="animation-delay: 3s;">
-                        <h3 class="font-great-vibes text-4xl mt-4 text-gold">Darwi Pujakusuma Dewi</h3>
-                        <p class="mt-2">Putri dari Bapak Heru & Ibu Widiyah Ningsih</p>
-                        <p class="text-xs text-gray-500">Palembang</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Detail Acara & Countdown -->
-            <section class="section text-center floral-bg">
-                <h2 class="font-great-vibes text-5xl mb-8 text-gold">Save The Date</h2>
-                <div class="flex justify-center">
-                    <div class="card w-full md:w-3/4 text-center">
-                        <h3 class="text-2xl font-semibold">Resepsi Pernikahan</h3>
-                        <p class="text-lg mt-2"><i class="far fa-calendar-check mr-2"></i>Jum'at, 19 September 2025</p>
-                        <p><i class="far fa-clock mr-2"></i>13:00 WIB - Selesai</p>
-                    </div>
-                </div>
-                <div class="mt-8">
-                    <p class="text-lg">di Kediaman Mempelai Pria:</p>
-                    <p class="font-semibold mt-1">Ds. Trenggulunan, RT. 8/RW.2, Kec. Ngasem, Bojonegoro</p>
-                </div>
-                 <div id="countdown" class="flex justify-center gap-3 md:gap-4 mt-8">
-                    <div class="countdown-box"><span id="days" class="countdown-number">0</span><span class="countdown-label">Hari</span></div>
-                    <div class="countdown-box"><span id="hours" class="countdown-number">0</span><span class="countdown-label">Jam</span></div>
-                    <div class="countdown-box"><span id="minutes" class="countdown-number">0</span><span class="countdown-label">Menit</span></div>
-                    <div class="countdown-box"><span id="seconds" class="countdown-number">0</span><span class="countdown-label">Detik</span></div>
-                </div>
-            </section>
-            
-             <!-- Galeri Foto -->
-            <section class="section text-center">
-                <h2 class="font-great-vibes text-5xl mb-8 text-gold">Our Moments</h2>
-                <div class="grid grid-cols-2 gap-3 md:gap-4 p-2">
-                    <div class="gallery-item"><img src="https://www.dropbox.com/scl/fi/47gknjady814e2h8iuslh/_MG_4390.jpg?rlkey=7ghm3x9k2re840ebqxmocwn8r&st=czcho2zu&raw=1" alt="Foto Vicki dan Dewi 1" class="w-full h-full object-cover rounded-lg shadow-lg aspect-square"></div>
-                    <div class="gallery-item"><img src="https://www.dropbox.com/scl/fi/w485hvgnbt1vajrrathb1/_MG_4487-2.JPG?rlkey=crijsltciami52g7chehfz14c&st=dry14al2&raw=1" alt="Foto Vicki dan Dewi 2" class="w-full h-full object-cover rounded-lg shadow-lg aspect-square"></div>
-                    <div class="gallery-item"><img src="https://www.dropbox.com/scl/fi/a7klzhrdqkmqe55su9ovc/_MG_4391-2.JPG?rlkey=a3alww3bd91og1bgs6qmqihtl&st=f5zybc55&raw=1" alt="Foto Vicki dan Dewi 3" class="w-full h-full object-cover rounded-lg shadow-lg aspect-square"></div>
-                    <div class="gallery-item"><img src="https://www.dropbox.com/scl/fi/yftum5hguv6ez6212cgcn/_MG_4485-2.JPG?rlkey=7iva3cadhnmvkwaxdo18l445c&st=geq3enwh&raw=1" alt="Foto Vicki dan Dewi 4" class="w-full h-full object-cover rounded-lg shadow-lg aspect-square"></div>
-                </div>
-            </section>
-
-            <!-- Lokasi -->
-            <section class="section text-center">
-                <h2 class="font-great-vibes text-5xl mb-6 text-gold">Location</h2>
-                <div class="rounded-lg overflow-hidden border-2 border-amber-100 shadow-lg">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3958.001642844111!2d111.74923131526463!3d-7.240366994775267!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e778b403482590b%3A0x77c448f22757530c!2sTrenggulunan%2C%2C%20Ngasem%2C%20Bojonegoro%20Regency%2C%20East%20Java!5e0!3m2!1sen!2sid!4v1663156947761!5m2!1sen!2sid" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-                <a href="https://maps.app.goo.gl/yZYnZE36GwC14Vki6" target="_blank" class="inline-block btn-primary font-bold py-3 px-6 rounded-full mt-6"><i class="fas fa-map-marker-alt mr-2"></i>Buka Google Maps</a>
-            </section>
-            
-            <!-- Hadiah -->
-            <section class="section text-center floral-bg">
-                <h2 class="font-great-vibes text-5xl mb-4 text-gold">Wedding Gift</h2>
-                <p class="mb-8 max-w-md mx-auto">Doa restu Anda adalah anugerah terindah. Namun jika ingin memberi tanda kasih, kami siapkan sarana di bawah ini untuk kemudahan Anda.</p>
-                <div class="space-y-6">
-                    <div class="card"><img src="https://www.dropbox.com/scl/fi/u16erxiuvcwqqqqdtrah7/images-2-2.jpeg?rlkey=ybo7hj6qyw2o2bx9nq4df3x5t&st=hn6m0sv2&raw=1" alt="Logo BCA" class="h-6 mx-auto mb-3"><p id="bca-rek" class="text-lg font-semibold tracking-wider">6733058485</p><p class="text-sm">a/n Vicki Jois Saputra</p><button onclick="copyToClipboard('bca-rek', this)" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-1 px-3 rounded-full mt-3">Salin</button></div>
-                    <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/1200px-Bank_Mandiri_logo_2016.svg.png" alt="Logo Bank Mandiri" class="h-6 mx-auto mb-3"><p id="mandiri-rek" class="text-lg font-semibold tracking-wider">1410024447583</p><p class="text-sm">a/n Darwi Pujakusuma Dewi</p><button onclick="copyToClipboard('mandiri-rek', this)" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-1 px-3 rounded-full mt-3">Salin</button></div>
-                </div>
-            </section>
-            
-            <!-- Ucapan -->
-            <section class="section">
-                <h2 class="font-great-vibes text-5xl text-center mb-6 text-gold">Guest Wishes</h2>
-                <div class="card">
-                    <form>
-                        <div class="mb-4"><input type="text" name="name" class="w-full bg-white border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-200" placeholder="Nama Anda"></div>
-                        <div class="mb-4"><textarea name="wish" rows="4" class="w-full bg-white border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-200" placeholder="Tulis ucapan dan doa terbaik..."></textarea></div>
-                        <button type="submit" class="w-full btn-primary font-bold py-3 rounded-lg">Kirim Ucapan</button>
-                    </form>
-                </div>
-
-                <!-- Daftar Ucapan -->
-                <div class="mt-8 space-y-4 max-h-80 overflow-y-auto pr-2">
-                    <div class="bg-white/60 p-4 rounded-lg shadow-sm border-l-4 border-amber-200">
-                        <p class="text-sm">"Selamat menempuh hidup baru Vicki & Dewi! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah. Bahagia selalu!"</p>
-                        <p class="text-right text-xs font-semibold mt-2">- Budi & Keluarga</p>
-                    </div>
-                    <div class="bg-white/60 p-4 rounded-lg shadow-sm border-l-4 border-amber-200">
-                        <p class="text-sm">"Happy Wedding! Lancar sampai hari H dan semoga langgeng sampai kakek nenek. Turut berbahagia!"</p>
-                        <p class="text-right text-xs font-semibold mt-2">- Sarah Aulia</p>
-                    </div>
-                     <div class="bg-white/60 p-4 rounded-lg shadow-sm border-l-4 border-amber-200">
-                        <p class="text-sm">"Congrats for your wedding! So happy for you both. Wishing you a lifetime of love and happiness."</p>
-                        <p class="text-right text-xs font-semibold mt-2">- John Doe</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Footer -->
-            <footer class="text-center p-8">
-                <p class="max-w-md mx-auto">Merupakan suatu kehormatan bagi kami atas kehadiran dan doa restu Bapak/Ibu/Saudara/i.</p>
-                <p class="mt-4">Terima Kasih,</p>
-                <p class="font-great-vibes text-5xl mt-4 text-gold">Vicki & Dewi</p>
-            </footer>
+        <!-- Area Loading -->
+        <div id="loadingArea" class="hidden py-6 flex-col items-center justify-center border-t border-gray-100 bg-purple-50">
+            <div class="loader mb-3"></div>
+            <p class="text-purple-700 text-sm font-medium animate-pulse">AI sedang menganalisis guratan Anda...</p>
         </div>
-    </main>
 
-    <audio id="background-music" loop><source src="https://www.dropbox.com/scl/fi/7hvvgdg2cbwem8m82m4pj/ssstik.io_1757858280312.mp3.m4a?rlkey=7i1ffh0u91trsbzzsra5ifr9v&st=eccbxsaz&raw=1" type="audio/mp4">Browser Anda tidak mendukung elemen audio.</audio>
+        <!-- Area Hasil -->
+        <div id="resultArea" class="hidden bg-gray-50 p-6 border-t border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Hasil Evaluasi AI</h2>
+            
+            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm mb-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-500">Tingkat Akurasi:</span>
+                    <span id="scoreBadge" class="px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                    <div id="scoreBar" class="bg-green-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                <h3 class="text-sm font-bold text-blue-800 mb-2"><i class="fas fa-comment-medical mr-1"></i> Umpan Balik & Koreksi:</h3>
+                <p id="feedbackText" class="text-sm text-gray-700 leading-relaxed">
+                    <!-- Feedback text will appear here -->
+                </p>
+                <!-- Area untuk titik kesalahan spesifik -->
+                <div id="feedbackPoints" class="mt-3"></div>
+            </div>
+        </div>
+        
+        <!-- Area Error -->
+        <div id="errorArea" class="hidden bg-red-50 p-6 border-t border-red-200">
+             <p id="errorText" class="text-sm text-red-600 text-center"></p>
+        </div>
+    </div>
 
     <script>
-        const openButton = document.getElementById('open-invitation');
-        const coverScreen = document.getElementById('cover-screen');
-        const mainContent = document.getElementById('main-content');
-        const bgMusic = document.getElementById('background-music');
-        const guestNameEl = document.getElementById('guest-name');
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const guestName = urlParams.get('to');
-        if (guestName) {
-            guestNameEl.textContent = guestName.replace(/_/g, ' ');
-        } else {
-            guestNameEl.textContent = "Tamu Undangan";
+        // --- ZVINONGEDZO ZVEMIFANANIDZO (REFERENCE IMAGES) ---
+        const referenceLinks = {
+            "Cho Ku Rei": "https://dl.dropboxusercontent.com/scl/fi/2ikdcmf9qmvsck4j9bcfj/IMG-20230126-WA0016.jpg?rlkey=bekf4ow7iig3r8rt01g8cp89i",
+            "Sei He Ki": "https://dl.dropboxusercontent.com/scl/fi/zr4rsexa7b1zo23pp3pg2/IMG-20230126-WA0014.jpg?rlkey=8how9xshrd090p6a2lz8zjr47",
+            "Hon Sha Ze Sho Nen": "https://dl.dropboxusercontent.com/scl/fi/uu5926877zsgayez6tikt/IMG-20230126-WA0015.jpg?rlkey=pgc5au90m8l8dnk3petremydj"
+        };
+
+        function updateReference() {
+            const sym = document.getElementById('symbolSelect').value;
+            // Gadziridza mufananidzo zvichienderana nesarudzo
+            document.getElementById('referenceImage').src = referenceLinks[sym];
         }
 
-        let autoScrollInterval; // Variabel untuk menyimpan interval auto-scroll
+        // --- SETUP CANVAS MENGGAMBAR ---
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        let isDrawing = false;
+        let currentMode = 'draw';
+        let cameraStream = null;
 
-        openButton.addEventListener('click', () => {
-            coverScreen.style.opacity = '0';
-            coverScreen.style.transform = 'scale(1.2)';
+        // Sesuaikan ukuran canvas internal dengan ukuran tampilan CSS
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = 300;
             
-            // Mencoba memutar musik
-            bgMusic.play().catch(error => {
-                console.error("Audio play failed:", error);
-                // Beberapa browser memblokir autoplay, musik akan mulai saat user berinteraksi lagi.
+            // Set background putih (penting untuk konversi gambar AI)
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Style kuas
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#1e293b'; // Warna tinta gelap
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Event Listeners untuk Mouse
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseout', endPosition);
+
+        // Event Listeners untuk Touch (Mobile)
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousedown", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }, { passive: false });
+        
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            const mouseEvent = new MouseEvent("mouseup", {});
+            canvas.dispatchEvent(mouseEvent);
+        }, { passive: false });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousemove", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }, { passive: false });
+
+        function startPosition(e) {
+            isDrawing = true;
+            draw(e);
+        }
+
+        function endPosition() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('resultArea').classList.add('hidden');
+            document.getElementById('errorArea').classList.add('hidden');
+            
+            if (currentMode === 'upload') {
+                document.getElementById('imageUpload').value = '';
+            }
+        }
+
+        // --- SETUP MODE INPUT (GAMBAR, UNGGAH, KAMERA) ---
+        function setMode(mode) {
+            currentMode = mode;
+            const tabDraw = document.getElementById('tab-draw');
+            const tabUpload = document.getElementById('tab-upload');
+            const tabCamera = document.getElementById('tab-camera');
+            const cameraContainer = document.getElementById('cameraContainer');
+            const inputLabel = document.getElementById('inputLabel');
+            
+            // Reset tab styles
+            [tabDraw, tabUpload, tabCamera].forEach(tab => {
+                tab.className = 'py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 transition-all';
             });
 
-            setTimeout(() => {
-                coverScreen.style.display = 'none';
-                mainContent.style.display = 'block';
-                document.body.style.overflow = 'auto'; // Tampilkan kembali scrollbar
-                initFallingPetals();
-                observeSections();
-                startAutoScroll(); // Mulai auto-scroll
-            }, 1500);
-        });
+            // Stop camera if running
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
 
-        // --- Fungsi Auto-Scroll ---
-        function startAutoScroll() {
-            // Hentikan auto-scroll jika user berinteraksi
-            const stopAutoScroll = () => {
-                clearInterval(autoScrollInterval);
-                window.removeEventListener('wheel', stopAutoScroll);
-                window.removeEventListener('touchmove', stopAutoScroll);
-            };
-            window.addEventListener('wheel', stopAutoScroll);
-            window.addEventListener('touchmove', stopAutoScroll);
+            cameraContainer.classList.add('hidden');
+            canvas.classList.remove('hidden');
 
-            const scrollAmount = 1; // Jumlah piksel untuk scroll setiap interval
-            const scrollDelay = 15; // Kecepatan scroll (ms)
-
-            autoScrollInterval = setInterval(() => {
-                // Cek jika sudah di paling bawah
-                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
-                    stopAutoScroll();
-                } else {
-                    window.scrollBy(0, scrollAmount);
-                }
-            }, scrollDelay);
+            if (mode === 'draw') {
+                tabDraw.className = 'py-2 text-sm font-medium rounded-md bg-white shadow text-purple-700 transition-all';
+                inputLabel.textContent = 'Gambar Simbol di Bawah Ini:';
+                clearCanvas();
+            } else if (mode === 'upload') {
+                tabUpload.className = 'py-2 text-sm font-medium rounded-md bg-white shadow text-purple-700 transition-all';
+                inputLabel.textContent = 'Preview Gambar Unggahan (Bisa ditimpa/dicoret):';
+                document.getElementById('imageUpload').click();
+            } else if (mode === 'camera') {
+                tabCamera.className = 'py-2 text-sm font-medium rounded-md bg-white shadow text-purple-700 transition-all';
+                inputLabel.textContent = 'Arahkan Kamera ke Kertas:';
+                canvas.classList.add('hidden');
+                cameraContainer.classList.remove('hidden');
+                cameraContainer.classList.add('flex');
+                startCamera();
+            }
         }
 
-        const countdownDate = new Date("Sep 19, 2025 13:00:00").getTime();
-        const countdownInterval = setInterval(() => {
-            const now = new Date().getTime();
-            const distance = countdownDate - now;
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return setMode('draw'); // Fallback if canceled
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    drawImageScaled(img);
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
 
-            if (distance < 0) {
-                clearInterval(countdownInterval);
-                document.getElementById("countdown").innerHTML = "<div class='text-center w-full text-lg'>Acara Telah Berlangsung</div>";
+        async function startCamera() {
+            try {
+                // Mencoba membuka kamera belakang jika tersedia (cocok untuk memindai dokumen)
+                cameraStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                document.getElementById('cameraFeed').srcObject = cameraStream;
+            } catch (err) {
+                console.error("Camera error:", err);
+                showError("Kamera tidak dapat diakses. Pastikan Anda telah memberikan izin kamera di browser Anda.");
+                setMode('draw');
+            }
+        }
+
+        function captureCamera() {
+            const video = document.getElementById('cameraFeed');
+            drawImageScaled(video);
+            
+            // Matikan kamera dan tampilkan hasil jepretan di Canvas
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            document.getElementById('cameraContainer').classList.add('hidden');
+            document.getElementById('cameraContainer').classList.remove('flex');
+            canvas.classList.remove('hidden');
+            document.getElementById('inputLabel').textContent = 'Hasil Jepretan (Bisa ditimpa/dicoret):';
+        }
+
+        // Fungsi khusus untuk menggambar foto/kamera agar pas (proporsional) ke dalam canvas
+        function drawImageScaled(imgOrVideo) {
+            clearCanvas(); // Bersihkan kanvas dulu
+            
+            const srcWidth = imgOrVideo.videoWidth || imgOrVideo.width;
+            const srcHeight = imgOrVideo.videoHeight || imgOrVideo.height;
+            
+            const hRatio = canvas.width / srcWidth;
+            const vRatio = canvas.height / srcHeight;
+            const ratio  = Math.min(hRatio, vRatio); 
+            
+            const renderWidth = srcWidth * ratio;
+            const renderHeight = srcHeight * ratio;
+            const centerShiftX = (canvas.width - renderWidth) / 2;
+            const centerShiftY = (canvas.height - renderHeight) / 2;  
+            
+            ctx.drawImage(imgOrVideo, 0, 0, srcWidth, srcHeight, centerShiftX, centerShiftY, renderWidth, renderHeight);  
+        }
+
+        // --- SETUP AI EVALUATION ---
+        // Kunci API dikosongkan karena akan diisi oleh environment otomatis
+        const apiKey = ""; 
+
+        // Fungsi dengan Exponential Backoff untuk mengatasi limitasi API
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            let delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error;
+                    await new Promise(res => setTimeout(res, delays[i]));
+                }
+            }
+        }
+
+        async function evaluateSymbol() {
+            const symbolSelected = document.getElementById('symbolSelect').value;
+            const loadingArea = document.getElementById('loadingArea');
+            const resultArea = document.getElementById('resultArea');
+            const errorArea = document.getElementById('errorArea');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Cek apakah canvas kosong (hanya putih)
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let isBlank = true;
+            for (let i = 0; i < imageData.length; i += 4) {
+                if (imageData[i] !== 255 || imageData[i+1] !== 255 || imageData[i+2] !== 255) {
+                    isBlank = false;
+                    break;
+                }
+            }
+
+            if (isBlank) {
+                showError("Silakan gambar simbol terlebih dahulu sebelum mengevaluasi.");
                 return;
             }
 
-            document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
-            document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
-        }, 1000);
-        
-        function copyToClipboard(elementId, button) {
-            const textToCopy = document.getElementById(elementId).innerText;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = button.innerHTML;
-                button.innerHTML = 'Tersalin!';
-                button.disabled = true;
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                }, 2000);
-            });
-        }
-        
-        function observeSections() {
-            const sections = document.querySelectorAll('.section');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
+            // Siapkan UI Loading
+            errorArea.classList.add('hidden');
+            resultArea.classList.add('hidden');
+            loadingArea.classList.remove('hidden');
+            loadingArea.classList.add('flex');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            try {
+                // Ambil gambar dari canvas dan ubah ke Base64 (buang prefix data:image/png;base64,)
+                const dataURL = canvas.toDataURL("image/png");
+                const base64Image = dataURL.split(',')[1];
+
+                // Tora base64 yemufananidzo wenongedzo (Extract Reference Image Base64)
+                let refBase64 = null;
+                try {
+                    const refImg = document.getElementById('referenceImage');
+                    const tempCanvas = document.createElement("canvas");
+                    tempCanvas.width = refImg.naturalWidth;
+                    tempCanvas.height = refImg.naturalHeight;
+                    const tempCtx = tempCanvas.getContext("2d");
+                    tempCtx.drawImage(refImg, 0, 0);
+                    refBase64 = tempCanvas.toDataURL("image/jpeg").split(',')[1];
+                } catch(e) {
+                    console.log("Kutadza kutora mufananidzo weNongedzo (CORS issue)", e);
+                }
+
+                // Prompt Instruksi Khusus untuk AI
+                const promptText = `Iwe uri Nyanzvi yeReiki. Mushandisi adhirowa chiratidzo: "${symbolSelected}". 
+Tariisa mufananidzo wechipiri (reference image) seyiyo chaiyo yekutarisa (absolute reference).
+Ongorora mufananidzo wekutanga (udhirowewa) uchienzanisa newechipiri.
+1. Berikan skor akurasi (0-100) berdasarkan proporsi, arah guratan, dan keutuhan simbol dibandingkan dengan gambar referensi.
+2. Berikan umpan balik yang konstruktif dalam bahasa Indonesia tentang apa yang sudah bagus dan apa yang perlu diperbaiki.
+3. Berikan array 'titik_kesalahan' (koordinat x dan y dalam persentase 0-100) beserta keterangan spesifik dalam bahasa Indonesia mengenai ketidaksesuaian dengan referensi. Jika gambar sempurna, kosongkan array ini.`;
+
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                
+                // Gadzirira data rekuendesa (Payload parts)
+                const requestParts = [
+                    { text: promptText },
+                    { inlineData: { mimeType: "image/png", data: base64Image } }
+                ];
+
+                // Batanidza mufananidzo wenongedzo kana uripo
+                if (refBase64) {
+                    requestParts.push({ text: "Mufananidzo weNongedzo (Reference Image):" });
+                    requestParts.push({ inlineData: { mimeType: "image/jpeg", data: refBase64 } });
+                }
+
+                const payload = {
+                    contents: [{
+                        role: "user",
+                        parts: requestParts
+                    }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                skor: { type: "INTEGER", description: "Skor akurasi 0 hingga 100" },
+                                umpan_balik: { type: "STRING", description: "Saran perbaikan dan evaluasi dalam bahasa Indonesia" },
+                                titik_kesalahan: {
+                                    type: "ARRAY",
+                                    description: "Daftar titik lokasi kesalahan pada gambar",
+                                    items: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            x: { type: "INTEGER", description: "Koordinat X (0-100) persentase" },
+                                            y: { type: "INTEGER", description: "Koordinat Y (0-100) persentase" },
+                                            keterangan: { type: "STRING", description: "Detail kesalahan di titik ini" }
+                                        }
+                                    }
+                                }
+                            },
+                            required: ["skor", "umpan_balik"]
+                        }
                     }
-                });
-            }, { threshold: 0.15 });
+                };
 
-            sections.forEach(section => {
-                observer.observe(section);
-            });
+                const data = await fetchWithRetry(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // Parse hasil
+                const resultText = data.candidates[0].content.parts[0].text;
+                const resultJSON = JSON.parse(resultText);
+
+                tampilkanHasil(resultJSON.skor, resultJSON.umpan_balik, resultJSON.titik_kesalahan);
+
+            } catch (error) {
+                console.error("AI Error:", error);
+                showError("Tadaduka kubata AI. Kune dambudziko netiweki kana sevha yakabatikana. Ndapota edza zvakare.");
+            } finally {
+                loadingArea.classList.add('hidden');
+                loadingArea.classList.remove('flex');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         }
 
-        // --- Efek Kelopak Bunga Jatuh ---
-        function initFallingPetals() {
-            const canvas = document.getElementById('falling-petals');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
+        function tampilkanHasil(skor, feedback, titikKesalahan) {
+            const resultArea = document.getElementById('resultArea');
+            const scoreBadge = document.getElementById('scoreBadge');
+            const scoreBar = document.getElementById('scoreBar');
+            const feedbackText = document.getElementById('feedbackText');
+            const feedbackPoints = document.getElementById('feedbackPoints');
+
+            // Set warna berdasarkan skor
+            let colorClass = 'bg-red-600';
+            let badgeBg = 'bg-red-100';
+            let badgeText = 'text-red-700';
+
+            if (skor >= 80) {
+                colorClass = 'bg-green-600';
+                badgeBg = 'bg-green-100';
+                badgeText = 'text-green-700';
+            } else if (skor >= 50) {
+                colorClass = 'bg-yellow-500';
+                badgeBg = 'bg-yellow-100';
+                badgeText = 'text-yellow-700';
+            }
+
+            scoreBadge.className = `px-3 py-1 rounded-full text-sm font-bold ${badgeBg} ${badgeText}`;
+            scoreBadge.textContent = `${skor}%`;
             
-            const resizeCanvas = () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            };
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
+            scoreBar.className = `h-2.5 rounded-full transition-all duration-1000 ${colorClass}`;
+            // Set timeout agar animasi CSS bar berjalan
+            setTimeout(() => {
+                scoreBar.style.width = `${skor}%`;
+            }, 100);
 
-            const particleCount = 40; // Reduced for subtlety
-
-            for (let i = 0; i < particleCount; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height - canvas.height,
-                    radius: Math.random() * 4 + 2,
-                    speed: Math.random() * 1.5 + 0.5,
-                    opacity: Math.random() * 0.5 + 0.2,
-                    sway: Math.random() * 2 - 1
-                });
-            }
-
-            const draw = () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                // Petal color matches theme
-                ctx.fillStyle = 'rgba(223, 203, 189, 0.7)'; 
-
-                particles.forEach(p => {
+            feedbackText.textContent = feedback;
+            
+            // Render titik kesalahan di UI dan di Canvas
+            feedbackPoints.innerHTML = '';
+            if (titikKesalahan && titikKesalahan.length > 0) {
+                let pointsHTML = '<ul class="space-y-3 mt-4 border-t border-blue-200 pt-3">';
+                
+                titikKesalahan.forEach((titik, index) => {
+                    const num = index + 1;
+                    
+                    // Tambahkan ke daftar UI (penjelasan titik kesalahan)
+                    pointsHTML += `
+                        <li class="flex items-start">
+                            <span class="flex-shrink-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold mr-3 mt-0.5 shadow-sm">${num}</span>
+                            <span class="text-sm text-gray-700">${titik.keterangan}</span>
+                        </li>
+                    `;
+                    
+                    // Gambar marker di atas Canvas
+                    const px = (titik.x / 100) * canvas.width;
+                    const py = (titik.y / 100) * canvas.height;
+                    
                     ctx.beginPath();
-                    ctx.globalAlpha = p.opacity;
-                    // Elongated shape for a petal feel
-                    ctx.ellipse(p.x, p.y, p.radius, p.radius * 1.5, Math.sin(p.y / 20) * 0.5, 0, 2 * Math.PI);
+                    ctx.arc(px, py, 15, 0, 2 * Math.PI);
+                    ctx.strokeStyle = '#ef4444'; // Warna Merah
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.arc(px, py, 10, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#ef4444';
                     ctx.fill();
+                    
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(num, px, py);
                 });
-                update();
+                
+                pointsHTML += '</ul>';
+                feedbackPoints.innerHTML = pointsHTML;
             }
 
-            const update = () => {
-                particles.forEach(p => {
-                    p.y += p.speed;
-                    p.x += Math.sin(p.y / 50) * p.sway;
-                    if (p.y > canvas.height + 20) {
-                        p.y = -20;
-                        p.x = Math.random() * canvas.width;
-                    }
-                });
-            }
+            resultArea.classList.remove('hidden');
+        }
 
-            const animate = () => {
-                draw();
-                requestAnimationFrame(animate);
-            }
-            animate();
+        function showError(msg) {
+            const errorArea = document.getElementById('errorArea');
+            document.getElementById('errorText').textContent = msg;
+            errorArea.classList.remove('hidden');
         }
     </script>
 </body>
 </html>
-
